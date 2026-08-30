@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tsdl"
+version = "0.1.0"
+description = "Geometry and ML data foundations for the TSDL traffic-sign inventory platform"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary - license decision pending" }
+authors = [{ name = "TSDL contributors" }]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6", "mypy>=1.11"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tsdl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["tsdl"]
+

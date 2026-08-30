@@ -1,0 +1,31 @@
+version: 1
+policy:
+  unknown_label: OTHER
+  silent_label_merging: forbidden
+  units:
+    speed_limit: mph
+broad_classes:
+  - STOP
+  - YIELD
+  - SPEED_LIMIT
+  - DO_NOT_ENTER
+  - ONE_WAY
+  - NO_TURN
+  - NO_U_TURN
+  - PEDESTRIAN_CROSSING
+  - SCHOOL
+  - RAILROAD
+  - WARNING
+  - CONSTRUCTION
+  - PARKING_REGULATION
+  - ROUTE_MARKER
+  - INFORMATION
+  - OTHER_REGULATORY
+  - OTHER
+recognition:
+  direct_yolo: [STOP, YIELD, DO_NOT_ENTER]
+  speed_digit_classifier: [SPEED_LIMIT]
+  symbol_classifier: [NO_TURN, NO_U_TURN, WARNING, CONSTRUCTION]
+  ocr_candidate: [PARKING_REGULATION, ROUTE_MARKER, INFORMATION]
+  review_required: [OTHER_REGULATORY, OTHER]
+
