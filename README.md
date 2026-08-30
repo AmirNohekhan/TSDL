@@ -18,6 +18,7 @@ Android APK, or deployed cloud infrastructure.
 - Weighted least-squares multi-ray triangulation with residual reporting and degeneracy
   rejection.
 - A canonical, versioned broad sign taxonomy and explicit second-stage routing.
+- Android MapLibre inventory map and cloud Leaflet map backed by one bounded GeoJSON endpoint.
 - Python lint, type-check, and test workflow.
 
 ## Development
@@ -46,7 +47,8 @@ license, checksum, taxonomy version, input contract, evaluation record, and prom
    signed model updates.
 
 See [current state](docs/CURRENT_STATE.md), [architecture](docs/ARCHITECTURE.md), and
-[geolocation conventions](docs/GEOLOCATION.md). Drivers must never interact with the app
+[geolocation conventions](docs/GEOLOCATION.md). Map setup is documented for
+[Android](android/README.md) and the [cloud service](cloud/api/README.md). Drivers must never interact with the app
 while a vehicle is moving; start mapping while parked or have a passenger operate it.
 
 ## Privacy and limitations
@@ -55,4 +57,3 @@ The intended default is sign crops only; continuous windshield video upload is o
 Coordinates must always carry method and uncertainty. Current triangulation returns fit
 residuals, not a complete uncertainty model, and must not yet be used to commit field assets.
 No accuracy, performance, or ML quality claims are made before reproducible evaluation.
-

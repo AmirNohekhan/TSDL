@@ -4,6 +4,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .venv/
+.devtools/
 dist/
 build/
 .idea/
@@ -16,4 +17,3 @@ local.properties
 *.pt
 *.pth
 .env
-

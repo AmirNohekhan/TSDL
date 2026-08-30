@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TSDL Traffic Sign Inventory</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIINfQ3ynhHdqZtVqfz/1yP+maRNsMZb+lo=" crossorigin="">
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+    .status { position:absolute; z-index:1000; top:12px; left:50px; padding:8px 12px;
+      background:#fff; border-radius:4px; box-shadow:0 1px 6px #0004; font:14px sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="status" class="status" role="status">Loading signs…</div>
+  <div id="map" aria-label="Traffic sign inventory map"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    const tileUrl = document.querySelector('meta[name="tsdl-tile-url"]')?.content ||
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const map = L.map('map').setView([39.1, -77.15], 11);
+    L.tileLayer(tileUrl, {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+    }).addTo(map);
+    const signs = L.geoJSON(null, {
+      pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
+        radius: 7, color: '#14213d', weight: 2, fillColor: '#fca311', fillOpacity: .9
+      }),
+      onEachFeature: (feature, layer) => {
+        const p = feature.properties;
+        layer.bindPopup(`<strong>${escapeHtml(p.sign_type)}</strong><br>${escapeHtml(p.sign_text)}` +
+          `<br>First seen: ${escapeHtml(p.first_seen_at)}<br>Last seen: ${escapeHtml(p.last_seen_at)}` +
+          `<br>Observations: ${Number(p.observation_count)}`);
+      }
+    }).addTo(map);
+    const status = document.getElementById('status');
+    const escapeHtml = value => String(value).replace(/[&<>'"]/g, char =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    let request;
+    async function refresh() {
+      if (request) request.abort();
+      request = new AbortController();
+      const b = map.getBounds();
+      const bbox = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()].join(',');
+      status.textContent = 'Loading signs…';
+      try {
+        const response = await fetch(`/v1/signs.geojson?bbox=${encodeURIComponent(bbox)}`,
+          {signal: request.signal});
+        if (!response.ok) throw new Error(`Inventory request failed (${response.status})`);
+        const data = await response.json();
+        signs.clearLayers().addData(data);
+        status.textContent = `${data.features.length} signs in view`;
+      } catch (error) {
+        if (error.name !== 'AbortError') status.textContent = error.message;
+      }
+    }
+    map.on('moveend', refresh);
+    refresh();
+  </script>
+</body>
+</html>
+
